@@ -40,58 +40,8 @@ http://espressif.com/en/support/download/other-tools?keys=&field_type_tid%5B%5D=
 Please refer to the description of each board for the setting of the tool.  
 
 ### In the case of GR-LYCHEE or GR-PEACH
-
-***
-**Attention!** If your board is GR-LYCHEE, updating the ESP32 firmware will disable the TRNG feature. When running a program that uses "mbed TLS" such as [pelion-example-common](https://os.mbed.com/teams/Renesas/code/pelion-example-common/) with the updated ESP32, add ``target.device_has_remove`` and ``target.macros_add`` to ``mbed_app.json`` as shown below.
-```
-{
-    "target_overrides": {
-=== (snip) ===
-        "GR_LYCHEE": {
-            "target.device_has_remove": ["TRNG"],
-            "target.macros_add"       : ["MBEDTLS_TEST_NULL_ENTROPY", "MBEDTLS_NO_DEFAULT_ENTROPY_SOURCES"],
-=== (snip) ===
-```
-If you want to restore the firmware, please refer to [here](https://github.com/d-kato/GR-Boards_ESP32_Serial_Bridge).
-***
-
-Write the following firmware in the ``docs/serial_bridge`` to your board:
-- ``GR-LYCHEE_ESP32_Serial_Bridge.bin`` (for GR-LYCHEE)
-- ``GR-PEACH_ESP32_Serial_Bridge.bin`` (for GR-PEACH)
-
-The firmware settings are described in ``ESP32_AT_V1.1.3/download.config``.  
-In the case of ESP32_AT_V1.1.3, the settings are as follows.  
-* SPI SPEED : ``40MHz``
-* SPI MODE : ``DIO``
-* FLASH SIZE : ``32Mbit``
-* COM : Set your board COM.
-* BAUD : ``460800`` (If a write error occurs, try again with the smaller value.)  
-
-|Path                                   |offset  |
-|:--------------------------------------|:-------|
-|bootloader/bootloader.bin              |0x1000  |
-|at_customize.bin                       |0x20000 |
-|customized_partitions/ble_data.bin     |0x21000 |
-|customized_partitions/server_cert.bin  |0x24000 |
-|customized_partitions/server_key.bin   |0x26000 |
-|customized_partitions/server_ca.bin    |0x28000 |
-|customized_partitions/client_cert.bin  |0x2a000 |
-|customized_partitions/client_key.bin   |0x2c000 |
-|customized_partitions/client_ca.bin    |0x2e000 |
-|**factory_param_lychee_and_peach.bin**<br>It is in the ``docs/serial_bridge`` folder of this library.|0x30000 |
-|phy_init_data.bin                      |0xf000  |
-|esp-at.bin                             |0x100000|
-|partitions_at.bin                      |0x8000  |
-
-![](docs/img/usb0_and_button.jpg)
-
-You can change ESP32 to the Flash writing mode by holding down ``USER_BUTTON0`` and connecting the USB cable. LED1 on the board lights during the write mode. In the flash writing mode, the LED1 lights up. To cancel the flash writing mode, please reconnect the USB cable again.  
-
-Procedure:  
-1. While holding down ``USER_BUTTON0``, connect the PC with ``MicroUSB connector Ch.0`` using a USB cable.  
-2. Press the ``Erase`` button on the tool to erase the unwanted data on the flash. The green area labeled ``IDLE`` in the tool changes to ``FINISH`` when finished.  
-3. Disconnect the USB cable and connect the USB cable while pressing ``USER_BUTTON0`` again.
-4. Press the ``START`` button on the tool to start writing. The green area labeled ``IDLE`` in the tool changes to ``FINISH`` when finished.  
+Please refer to the following.  
+https://github.com/d-kato/GR-Boards_ESP32_Serial_Bridge
 
 ### In the case of RZ/A2M Evaluation Board Kit
 Connection:  
