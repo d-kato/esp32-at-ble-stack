@@ -1,5 +1,5 @@
 # esp32-at-ble-stack
-This is a library for using Mbed OS BLE stack with ESP32. Please update the ESP32 firmware to ``AT version: 1.1.3.0`` or later to use the BLE function.  
+This is a library for using Mbed OS BLE stack with ESP32. Please update the ESP32 firmware to ``AT version: 1.1.3.0 or later`` to use the BLE function.  
 Please see the [Mbed OS Example BLE GitHub Repo](https://github.com/ARMmbed/mbed-os-example-ble) for all code examples, and the [Mbed OS BLE API page](https://os.mbed.com/docs/latest/apis/bluetooth.html) for all code documentation and general help.
 
 It works properly only in the peripheral role. The center role does not work properly with the ESP32 firmware problem.  
@@ -25,8 +25,12 @@ Please refer to [RZ_A2M_BLE_sample](https://github.com/d-kato/RZ_A2M_BLE_sample)
 * [Mbed OS BLE API page](https://os.mbed.com/docs/latest/apis/bluetooth.html) for the Mbed BLE API documentation.
 
 
-## How to update ESP32 firmware to "AT version:1.1.3.0"
+## How to update ESP32 firmware
+### In the case of GR-LYCHEE or GR-PEACH
+Please refer to the following.  
+https://github.com/d-kato/GR-Boards_ESP32_Serial_Bridge
 
+### In the case of RZ/A2M Evaluation Board Kit
 Download the ESP32 firmware:  
 https://www.espressif.com/en/support/download/at
 
@@ -37,13 +41,6 @@ http://espressif.com/en/support/download/other-tools?keys=&field_type_tid%5B%5D=
 
 ![](docs/img/esp32_tool_2.png)  
 
-Please refer to the description of each board for the setting of the tool.  
-
-### In the case of GR-LYCHEE or GR-PEACH
-Please refer to the following.  
-https://github.com/d-kato/GR-Boards_ESP32_Serial_Bridge
-
-### In the case of RZ/A2M Evaluation Board Kit
 Connection:  
 ![](docs/img/pin_setting_fw_update.png)  
 Turn on SW1-2 of Pmod ESP32.  
@@ -51,8 +48,8 @@ Turn on SW1-2 of Pmod ESP32.
 Write the following firmware in the ``docs/serial_bridge`` to your board using custom boot loader:  
 - ``RZ_A2M_EVB_EPS32_Serial_Bridge_application.bin``  
 
-The firmware settings are described in ``ESP32_AT_V1.1.3/download.config``.  
-In the case of ESP32_AT_V1.1.3, the settings are as follows.  
+The firmware settings are described in ``ESP32_AT_Vxxx/download.config``.  
+In the case of ESP32_AT_V1.2, the settings are as follows.  
 * SPI SPEED : ``40MHz``
 * SPI MODE : ``DIO``
 * FLASH SIZE : ``32Mbit``
@@ -61,6 +58,7 @@ In the case of ESP32_AT_V1.1.3, the settings are as follows.
 
 |Path                                   |offset  |
 |:--------------------------------------|:-------|
+|ota_data_initial.bin                   |0x10000 |
 |bootloader/bootloader.bin              |0x1000  |
 |at_customize.bin                       |0x20000 |
 |customized_partitions/ble_data.bin     |0x21000 |
