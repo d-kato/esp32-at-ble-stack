@@ -43,30 +43,7 @@ Esp32AtGap::Esp32AtGap() : _scan(false), _connect(false) {
     _esp->ble_attach_disconn(callback(this, &Esp32AtGap::ble_disconn_cb));
     _esp->ble_attach_scan(callback(this, &Esp32AtGap::ble_scan_cb));
     advertising_param.own_addr_type = BLE_ADDR_TYPE_RANDOM;
-
-#if DEVICE_TRNG
-    size_t olen;
-
-    trng_t trng_obj;
-    trng_init(&trng_obj);
-    int ret = trng_get_bytes(&trng_obj, &randam_addr[0], 6, &olen);
-    trng_free(&trng_obj);
-#else
-    AnalogIn ad(RANDOM_SEED_AD_PIN);
-    uint32_t rand_data;
-
-    srand(ad.read_u16());
-    rand_data = rand();
-    randam_addr[0] = (uint8_t)(rand_data);
-    randam_addr[1] = (uint8_t)(rand_data >> 8);
-    randam_addr[2] = (uint8_t)(rand_data >> 16);
-    srand(ad.read_u16());
-    rand_data = rand();
-    randam_addr[3] = (uint8_t)(rand_data);
-    randam_addr[4] = (uint8_t)(rand_data >> 8);
-    randam_addr[5] = (uint8_t)(rand_data >> 16);
-#endif
-    randam_addr[0] |= 0xC0; // The two most significant bits of the address shall be equal to 1.
+    randam_addr[0] = 0;
 }
 
 ble_error_t Esp32AtGap::setAdvertisingData_(const GapAdvertisingData &advData, const GapAdvertisingData &scanResponse)
@@ -156,6 +133,7 @@ ble_error_t Esp32AtGap::getAddress_(
         if (typeP != NULL) {
             *typeP = BLEProtocol::AddressType::RANDOM_STATIC;
         }
+        set_randam_addr();
         address[0] = randam_addr[5];
         address[1] = randam_addr[4];
         address[2] = randam_addr[3];
@@ -252,6 +230,7 @@ ble_error_t Esp32AtGap::setAdvertisingParameters_(
         _esp->ble_set_addr(0);
     } else if (params.getOwnAddressType() == own_address_type_t::RANDOM) {
         advertising_param.own_addr_type = BLE_ADDR_TYPE_RANDOM;
+        set_randam_addr();
         _esp->ble_set_addr(1, randam_addr);
     } else {
         return BLE_ERROR_INVALID_PARAM;
@@ -517,6 +496,35 @@ void Esp32AtGap::advertisingTimeoutCallback()
 void Esp32AtGap::doEvent(uint32_t id, void * arg)
 {
     // do nothing
+}
+
+void Esp32AtGap::set_randam_addr()
+{
+    if (randam_addr[0] == 0) {
+#if DEVICE_TRNG
+        size_t olen;
+
+        trng_t trng_obj;
+        trng_init(&trng_obj);
+        trng_get_bytes(&trng_obj, &randam_addr[0], 6, &olen);
+        trng_free(&trng_obj);
+#else
+        AnalogIn ad(RANDOM_SEED_AD_PIN);
+        uint32_t rand_data;
+
+        srand(ad.read_u16());
+        rand_data = rand();
+        randam_addr[0] = (uint8_t)(rand_data);
+        randam_addr[1] = (uint8_t)(rand_data >> 8);
+        randam_addr[2] = (uint8_t)(rand_data >> 16);
+        srand(ad.read_u16());
+        rand_data = rand();
+        randam_addr[3] = (uint8_t)(rand_data);
+        randam_addr[4] = (uint8_t)(rand_data >> 8);
+        randam_addr[5] = (uint8_t)(rand_data >> 16);
+#endif
+        randam_addr[0] |= 0xC0; // The two most significant bits of the address shall be equal to 1.
+    }
 }
 
 } // namespace atcmd

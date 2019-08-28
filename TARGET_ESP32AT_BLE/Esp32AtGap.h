@@ -175,6 +175,8 @@ private:
 
     void scanTimeoutCallback();
     void advertisingTimeoutCallback();
+
+    void set_randam_addr();
 };
 
 } // namespace atcmd
