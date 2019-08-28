@@ -290,6 +290,35 @@ ble_error_t Esp32AtGap::setAdvertisingPayload_(
     mbed::Span<const uint8_t> payload
 )
 {
+    char * p_buf = (char *)payload.data();
+    uint8_t field_size;
+    uint8_t field_type;
+    uint8_t name_field_type = 0;
+    int idx = 0;
+    int payload_size = payload.size();
+    char * dev_name_buf = NULL;
+
+    while (idx < payload_size) {
+        field_size = p_buf[idx];
+        field_type = p_buf[idx + 1];
+        if ((field_type == adv_data_type_t::SHORTENED_LOCAL_NAME)
+         || (field_type == adv_data_type_t::COMPLETE_LOCAL_NAME)) {
+            if (name_field_type == adv_data_type_t::SHORTENED_LOCAL_NAME) {
+                delete[] dev_name_buf;
+            }
+            if (dev_name_buf == NULL) {
+                dev_name_buf = new char[field_size];
+                memcpy(dev_name_buf, &p_buf[idx + 2], field_size - 1);
+                dev_name_buf[field_size - 1] = 0;
+                name_field_type = field_type;
+            }
+        }
+        idx += field_size + 1;
+    }
+    if (dev_name_buf != NULL) {
+        _esp->ble_set_device_name(dev_name_buf);
+        delete[] dev_name_buf;
+    }
     if (!_esp->ble_set_advertising_data(payload.data(), payload.size())) {
         return BLE_ERROR_INVALID_STATE;
     }
