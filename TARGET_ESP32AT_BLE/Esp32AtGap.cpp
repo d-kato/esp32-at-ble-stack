@@ -303,8 +303,9 @@ ble_error_t Esp32AtGap::setAdvertisingPayload_(
         field_type = p_buf[idx + 1];
         if ((field_type == adv_data_type_t::SHORTENED_LOCAL_NAME)
          || (field_type == adv_data_type_t::COMPLETE_LOCAL_NAME)) {
-            if (name_field_type == adv_data_type_t::SHORTENED_LOCAL_NAME) {
+            if ((name_field_type == adv_data_type_t::SHORTENED_LOCAL_NAME) && (dev_name_buf != NULL)) {
                 delete[] dev_name_buf;
+                dev_name_buf = NULL;
             }
             if (dev_name_buf == NULL) {
                 dev_name_buf = new char[field_size];
